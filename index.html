@@ -2,191 +2,141 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Vídeo IA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07090d">
+<title>VideoForge AI</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f0f0f;color:#fff;min-height:100vh;padding:20px}
-  .wrap{max-width:480px;margin:0 auto}
-  h1{font-size:22px;font-weight:600;text-align:center;margin-bottom:4px;padding-top:10px}
-  .sub{font-size:13px;color:#888;text-align:center;margin-bottom:20px}
-  .counter{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#111;border:1px solid #222;border-radius:10px;margin-bottom:12px}
-  .counter span:first-child{font-size:13px;color:#666}
-  .counter span:last-child{font-size:14px;font-weight:600}
-  .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px;margin-bottom:12px}
-  label{display:block;font-size:13px;color:#aaa;margin-bottom:7px}
-  input,textarea,select{width:100%;padding:11px 14px;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none}
-  textarea{resize:vertical;min-height:88px}
-  .kw{position:relative}
-  .kw input{padding-right:44px}
-  .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#666;cursor:pointer;font-size:16px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .btn{width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px}
-  .btn:disabled{background:#333;color:#666;cursor:not-allowed}
-  .status{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-top:12px;display:none}
-  .srow{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-  .spin{width:16px;height:16px;border:2px solid #333;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .smsg{font-size:14px;font-weight:500}
-  .ssub{font-size:12px;color:#666}
-  .bar{height:4px;background:#222;border-radius:2px;margin-top:10px;overflow:hidden}
-  .bf{height:100%;background:#2563eb;border-radius:2px;transition:width .4s;width:0%}
-  .err{background:#2a0a0a;border:1px solid #5a1a1a;border-radius:12px;padding:14px;margin-top:12px;font-size:13px;color:#f87171;display:none;line-height:1.5}
-  .vwrap{margin-top:12px;display:none}
-  video{width:100%;border-radius:12px;background:#000}
-  .dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;margin-top:10px;text-decoration:none}
-  .note{font-size:12px;color:#555;text-align:center;margin-top:16px;line-height:1.6}
-  .note a{color:#2563eb;text-decoration:none}
+:root{--bg:#07090d;--panel:#0d1118;--panel2:#111722;--line:#202936;--text:#f4f7fb;--muted:#8993a3;--blue:#4f7cff;--blue2:#315eea;--green:#36d399;--red:#ff647c;--yellow:#f5c451}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 50% -180px,#17264b 0%,transparent 60%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.app{width:min(920px,100%);margin:auto;padding:22px 16px 48px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#5d86ff,#315eea);box-shadow:0 10px 30px #315eea33;font-size:20px}.brand h1{font-size:18px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}.counter{padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#0b0f15;color:var(--muted);font-size:12px}.counter b{color:#fff;font-size:15px;margin-left:5px}.card{background:linear-gradient(180deg,#0e131b,#0b0f15);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 12px 40px #00000018}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.head h2{font-size:14px;margin:0}.head span{font-size:11px;color:var(--muted)}label{display:block;color:#aab3c1;font-size:12px;margin:0 0 7px}.field{margin-bottom:13px}.input,textarea,select{width:100%;background:#080b10;color:#fff;border:1px solid #27303d;border-radius:11px;padding:12px 13px;outline:none;transition:.15s}.input:focus,textarea:focus,select:focus{border-color:#4f7cff88;box-shadow:0 0 0 3px #4f7cff12}textarea{min-height:150px;resize:vertical;line-height:1.5}.keywrap{position:relative}.keywrap .input{padding-right:48px}.eye{position:absolute;right:5px;top:5px;height:38px;width:40px;background:transparent;border:0;color:#788395;border-radius:9px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint{color:#687385;font-size:11px;line-height:1.45;margin-top:6px}.actions{display:flex;gap:10px}.primary,.secondary{border:0;border-radius:12px;padding:13px 16px;font-weight:700}.primary{flex:1;background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;box-shadow:0 10px 25px #315eea33}.primary:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#151b25;color:#cbd3df;border:1px solid var(--line)}.queue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.queue-title{font-size:14px;font-weight:700}.queue-meta{font-size:11px;color:var(--muted)}.queue{display:grid;gap:8px}.item{border:1px solid var(--line);background:#0a0e14;border-radius:13px;padding:12px}.itemtop{display:flex;gap:10px;align-items:flex-start}.num{min-width:24px;height:24px;border-radius:7px;background:#151c27;color:#9ba8bb;display:grid;place-items:center;font-size:11px;font-weight:700}.prompttext{flex:1;font-size:12px;line-height:1.45;color:#d6dce6;word-break:break-word}.badge{font-size:10px;padding:4px 7px;border-radius:20px;background:#171e29;color:#8d99aa;white-space:nowrap}.badge.running{color:#a9beff;background:#17234a}.badge.done{color:#69e0ad;background:#102b22}.badge.error{color:#ff8293;background:#32151d}.badge.wait{color:#9ca7b7}.progress{height:3px;background:#171e27;border-radius:9px;margin-top:10px;overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,#4f7cff,#72a0ff);transition:width .3s}.result{margin-top:10px;display:none}.result video{width:100%;max-height:430px;border-radius:10px;background:#000}.download{display:inline-flex;margin-top:8px;padding:9px 11px;border-radius:9px;background:#151c27;border:1px solid #293342;color:#dce5f2;text-decoration:none;font-size:11px}.status{display:none;border:1px solid var(--line);background:#0a0e14;border-radius:14px;padding:13px;margin-top:12px}.statusline{display:flex;align-items:center;gap:9px;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px #4f7cff}.status small{display:block;color:var(--muted);margin-top:5px}.error{display:none;color:#ff8392;background:#32151d;border:1px solid #5a2530;border-radius:12px;padding:11px;font-size:12px;line-height:1.45;margin-top:12px}.empty{color:#697586;text-align:center;border:1px dashed #26303d;border-radius:12px;padding:20px;font-size:12px}.foot{text-align:center;color:#566171;font-size:10px;margin-top:15px}.foot a{color:#7e9dff;text-decoration:none}@media(max-width:600px){.app{padding-top:14px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.actions{flex-direction:column}.secondary{width:100%}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🎬 Gerador de Vídeo IA</h1>
-  <p class="sub">Replicate API · sem marca d'água</p>
+<main class="app">
+<header class="top">
+  <div class="brand"><div class="logo">✦</div><div><h1>VideoForge AI</h1><p>Geração de vídeo em lote · Replicate</p></div></div>
+  <div class="counter">Gerados <b id="count">0</b></div>
+</header>
 
-  <div class="counter">
-    <span>Vídeos gerados</span>
-    <span id="cnt">0</span>
+<section class="card">
+  <div class="head"><h2>Configuração</h2><span>Processamento sequencial</span></div>
+  <div class="field">
+    <label>Chave da API do Replicate</label>
+    <div class="keywrap"><input class="input" id="key" type="password" autocomplete="off" placeholder="r8_..."><button class="eye" id="eye" type="button">◉</button></div>
+    <div class="hint">A chave fica somente no navegador e é enviada para suas próprias funções da Vercel.</div>
   </div>
-
-  <div class="card">
-    <label>🔑 Chave da API do Replicate</label>
-    <div class="kw">
-      <input type="password" id="key" placeholder="r8_xxxxxxxxxxxxxxxxxxxx">
-      <button class="eye" onclick="toggleKey()">👁</button>
-    </div>
+  <div class="grid">
+    <div class="field"><label>Modelo</label><select id="model"><option value="minimax/video-01">Hailuo</option><option value="fofr/kling-v1.6-standard">Kling v1.6</option><option value="lucataco/cogvideox-5b">CogVideoX</option></select></div>
+    <div class="field"><label>Formato</label><select id="aspect"><option value="16:9">16:9 · YouTube</option><option value="9:16">9:16 · Shorts/TikTok</option><option value="1:1">1:1 · Quadrado</option></select></div>
   </div>
+</section>
 
-  <div class="card">
-    <label>📝 Descrição do vídeo (em inglês)</label>
-    <textarea id="prompt" placeholder="A galaxy slowly rotating in deep space, cinematic dark lighting, smooth motion"></textarea>
+<section class="card">
+  <div class="head"><h2>Prompts</h2><span>1 prompt por linha</span></div>
+  <textarea id="prompts" placeholder="A cinematic galaxy slowly rotating in deep space, realistic stars, subtle nebula, smooth camera movement
+A massive blue planet floating in deep space, cinematic lighting, realistic atmosphere
+A spacecraft traveling through a dense field of stars, epic scale, slow camera movement"></textarea>
+  <div class="hint">Cada linha vira um vídeo. O próximo começa somente depois que o anterior terminar.</div>
+</section>
+
+<section class="card">
+  <div class="actions">
+    <button class="primary" id="start">▶ Gerar sequência</button>
+    <button class="secondary" id="clear">Limpar fila</button>
   </div>
+  <div class="status" id="status"><div class="statusline"><span class="dot"></span><b id="statusTitle">Preparando...</b></div><small id="statusSub"></small></div>
+  <div class="error" id="error"></div>
+</section>
 
-  <div class="card">
-    <div class="row">
-      <div>
-        <label>Modelo</label>
-        <select id="model">
-          <option value="minimax/video-01">Hailuo</option>
-          <option value="fofr/kling-v1.6-standard">Kling v1.6</option>
-          <option value="lucataco/cogvideox-5b">CogVideoX</option>
-        </select>
-      </div>
-      <div>
-        <label>Formato</label>
-        <select id="aspect">
-          <option value="16:9">16:9</option>
-          <option value="9:16">9:16</option>
-          <option value="1:1">1:1</option>
-        </select>
-      </div>
-    </div>
-  </div>
+<section class="card">
+  <div class="queue-head"><div class="queue-title">Fila de renderização</div><div class="queue-meta" id="queueMeta">0 vídeos</div></div>
+  <div id="queue" class="queue"><div class="empty">Cole seus prompts acima e inicie a sequência.</div></div>
+</section>
 
-  <button class="btn" id="btn" onclick="gerar()">▶ Gerar vídeo</button>
+<div class="foot">VideoForge AI · <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener">Gerenciar API</a></div>
+</main>
 
-  <div class="err" id="err"></div>
-
-  <div class="status" id="stbox">
-    <div class="srow">
-      <div class="spin"></div>
-      <span class="smsg" id="smsg">Enviando...</span>
-    </div>
-    <div class="ssub" id="ssub">Mantenha a tela aberta.</div>
-    <div class="bar"><div class="bf" id="bf"></div></div>
-  </div>
-
-  <div class="vwrap" id="vwrap">
-    <video id="vid" controls playsinline></video>
-    <a class="dl" id="dl" target="_blank">⬇️ Abrir vídeo para salvar</a>
-  </div>
-
-  <p class="note">
-    <a href="https://replicate.com/signin" target="_blank">Criar conta grátis</a> ·
-    <a href="https://replicate.com/account/api-tokens" target="_blank">Pegar chave API</a>
-  </p>
-</div>
 <script>
-  let count = parseInt(localStorage.getItem('vc')||'0');
-  document.getElementById('cnt').textContent = count;
+const $=id=>document.getElementById(id);
+let total=Number(localStorage.getItem("vf_count")||0);
+$("count").textContent=total;
 
-  function toggleKey(){
-    const i=document.getElementById('key');
-    i.type=i.type==='password'?'text':'password';
+$("eye").onclick=()=>{const i=$("key");i.type=i.type==="password"?"text":"password";};
+$("clear").onclick=()=>{if(window.running)return; $("prompts").value=""; $("queue").innerHTML='<div class="empty">Cole seus prompts acima e inicie a sequência.</div>';$("queueMeta").textContent="0 vídeos";hideError();};
+function showError(msg){$("error").textContent="⚠ "+msg;$("error").style.display="block";}
+function hideError(){$("error").style.display="none";}
+function safe(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function parsePrompts(){return $("prompts").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);}
+function renderQueue(prompts){
+  $("queue").innerHTML=prompts.map((p,i)=>`<div class="item" id="item-${i}">
+    <div class="itemtop"><div class="num">${i+1}</div><div class="prompttext">${safe(p)}</div><span class="badge wait" id="badge-${i}">Aguardando</span></div>
+    <div class="progress"><div class="bar" id="bar-${i}"></div></div>
+    <div class="result" id="result-${i}"></div>
+  </div>`).join("");
+  $("queueMeta").textContent=`${prompts.length} vídeo${prompts.length===1?"":"s"}`;
+}
+function setItem(i,state,text,progress){
+  const b=$(`badge-${i}`),bar=$(`bar-${i}`);
+  b.textContent=text;b.className="badge "+state;
+  if(progress!=null)bar.style.width=progress+"%";
+}
+function showResult(i,url){
+  const r=$(`result-${i}`);r.style.display="block";
+  r.innerHTML=`<video controls playsinline src="${url}"></video><a class="download" href="${url}" target="_blank" rel="noopener">↗ Abrir vídeo para salvar</a>`;
+}
+async function jsonOrError(response){
+  const text=await response.text();
+  let data;try{data=JSON.parse(text)}catch{throw new Error(text.slice(0,180)||"O servidor não retornou JSON.");}
+  if(!response.ok)throw new Error(data.error||data.detail||"Erro no servidor.");
+  return data;
+}
+async function createPrediction(key,prompt,model,aspect){
+  const r=await fetch("/api/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({apiKey:key,prompt,model,aspect})});
+  return jsonOrError(r);
+}
+async function getStatus(id,key){
+  const r=await fetch(`/api/status?id=${encodeURIComponent(id)}&apiKey=${encodeURIComponent(key)}`);
+  return jsonOrError(r);
+}
+async function processOne(i,prompts,key,model,aspect){
+  setItem(i,"running","Enviando",10);
+  $("statusTitle").textContent=`Vídeo ${i+1} de ${prompts.length}`;
+  $("statusSub").textContent="Enviando para o Replicate...";
+  let pred=await createPrediction(key,prompts[i],model,aspect);
+  let attempts=0;
+  while(pred.status!=="succeeded"&&pred.status!=="failed"&&pred.status!=="canceled"&&attempts<100){
+    await new Promise(r=>setTimeout(r,3000));attempts++;
+    pred=await getStatus(pred.id,key);
+    const pct=Math.min(15+attempts*.8,92);
+    setItem(i,"running","Gerando",pct);
+    $("statusSub").textContent=`Processando... tentativa ${attempts}`;
   }
-
-  function st(msg,sub,p){
-    document.getElementById('smsg').textContent=msg;
-    document.getElementById('ssub').textContent=sub;
-    if(p!==undefined) document.getElementById('bf').style.width=p+'%';
-  }
-
-  function err(msg){
-    const b=document.getElementById('err');
-    b.textContent='❌ '+msg;
-    b.style.display='block';
-  }
-
-  async function gerar(){
-    const key=document.getElementById('key').value.trim();
-    const prompt=document.getElementById('prompt').value.trim();
-    const model=document.getElementById('model').value;
-    const aspect=document.getElementById('aspect').value;
-
-    document.getElementById('err').style.display='none';
-    document.getElementById('vwrap').style.display='none';
-
-    if(!key){err('Cole sua chave da API antes de gerar.');return;}
-    if(!prompt){err('Descreva o vídeo que você quer criar.');return;}
-
-    const btn=document.getElementById('btn');
-    btn.disabled=true;
-    btn.textContent='⏳ Gerando...';
-
-    const sb=document.getElementById('stbox');
-    sb.style.display='block';
-    st('Enviando para o Replicate...','Iniciando...',10);
-
-    try{
-      const r=await fetch('/api/gerar',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({apiKey:key,prompt,model,aspect})
-      });
-      const data=await r.json();
-      if(!r.ok) throw new Error(data.error||'Erro ao criar predição.');
-
-      st('Na fila...','Aguardando processamento...',25);
-
-      let pred=data,attempts=0;
-      while(pred.status!=='succeeded'&&pred.status!=='failed'&&attempts<80){
-        await new Promise(r=>setTimeout(r,3000));
-        attempts++;
-        st('Gerando vídeo...','Não feche a tela. Pode levar até 2 min.',Math.min(25+attempts,90));
-        const p=await fetch(`/api/status?id=${pred.id}&apiKey=${key}`);
-        pred=await p.json();
-      }
-
-      if(pred.status==='failed') throw new Error(pred.error||'Geração falhou. Tente outro prompt.');
-      if(pred.status!=='succeeded') throw new Error('Tempo esgotado. Tente novamente.');
-
-      st('✅ Pronto!','',100);
-      const url=Array.isArray(pred.output)?pred.output[0]:pred.output;
-      document.getElementById('vid').src=url;
-      document.getElementById('dl').href=url;
-      document.getElementById('vwrap').style.display='block';
-      count++;localStorage.setItem('vc',count);
-      document.getElementById('cnt').textContent=count;
-      setTimeout(()=>{sb.style.display='none';},2000);
-
-    }catch(e){
-      document.getElementById('stbox').style.display='none';
-      err(e.message||'Erro inesperado.');
-    }finally{
-      btn.disabled=false;
-      btn.textContent='▶ Gerar vídeo';
+  if(pred.status!=="succeeded")throw new Error(pred.error||`Geração terminou com status: ${pred.status||"desconhecido"}`);
+  const url=Array.isArray(pred.output)?pred.output[0]:pred.output;
+  if(!url)throw new Error("O Replicate terminou sem retornar um vídeo.");
+  setItem(i,"done","Concluído",100);showResult(i,url);
+  total++;localStorage.setItem("vf_count",total);$("count").textContent=total;
+}
+window.running=false;
+$("start").onclick=async()=>{
+  if(window.running)return;hideError();
+  const key=$("key").value.trim(),prompts=parsePrompts(),model=$("model").value,aspect=$("aspect").value;
+  if(!key)return showError("Cole sua chave da API do Replicate.");
+  if(!prompts.length)return showError("Adicione pelo menos um prompt.");
+  if(prompts.length>50)return showError("Limite de 50 prompts por sequência.");
+  renderQueue(prompts);window.running=true;$("start").disabled=true;$("start").textContent="⏳ Processando...";
+  $("status").style.display="block";
+  try{
+    for(let i=0;i<prompts.length;i++){
+      try{await processOne(i,prompts,key,model,aspect);}
+      catch(e){setItem(i,"error","Erro",0);throw new Error(`Vídeo ${i+1}: ${e.message}`);}
     }
-  }
+    $("statusTitle").textContent="✓ Sequência concluída";
+    $("statusSub").textContent=`${prompts.length} vídeo${prompts.length===1?"":"s"} processado${prompts.length===1?"":"s"}.`;
+  }catch(e){
+    showError(e.message);$("statusTitle").textContent="Sequência interrompida";$("statusSub").textContent="Corrija o erro e execute novamente.";
+  }finally{window.running=false;$("start").disabled=false;$("start").textContent="▶ Gerar sequência";}
+};
 </script>
 </body>
 </html>
