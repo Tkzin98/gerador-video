@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Vídeo IA</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; padding: 20px; }
+  .container { max-width: 480px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 24px; padding-top: 10px; }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header p { font-size: 13px; color: #888; margin-top: 4px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  label { display: block; font-size: 13px; color: #aaa; margin-bottom: 7px; }
+  input, textarea, select {
+    width: 100%; padding: 11px 14px; background: #111; border: 1px solid #333;
+    border-radius: 10px; color: #fff; font-size: 14px; font-family: inherit; outline: none;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  .key-wrap { position: relative; }
+  .key-wrap input { padding-right: 44px; }
+  .eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer; font-size: 16px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn { width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+  .status { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; margin-top: 12px; display: none; }
+  .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid #333; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-msg { font-size: 14px; font-weight: 500; }
+  .status-sub { font-size: 12px; color: #666; }
+  .bar { height: 4px; background: #222; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .bar-fill { height: 100%; background: #2563eb; border-radius: 2px; transition: width 0.4s; width: 0%; }
+  .error { background: #2a0a0a; border: 1px solid #5a1a1a; border-radius: 12px; padding: 14px; margin-top: 12px; font-size: 13px; color: #f87171; display: none; line-height: 1.5; }
+  .video-wrap { margin-top: 12px; display: none; }
+  video { width: 100%; border-radius: 12px; background: #000; }
+  .btn-dl { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 10px; text-decoration: none; }
+  .counter { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #111; border: 1px solid #222; border-radius: 10px; margin-bottom: 12px; }
+  .counter span:first-child { font-size: 13px; color: #666; }
+  .counter span:last-child { font-size: 14px; font-weight: 600; }
+  .note { font-size: 12px; color: #555; text-align: center; margin-top: 16px; line-height: 1.6; }
+  .note a { color: #2563eb; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎬 Gerador de Vídeo IA</h1>
+    <p>Replicate API · sem marca d'água</p>
+  </div>
+
+  <div class="counter">
+    <span>Vídeos gerados</span>
+    <span id="counter">0</span>
+  </div>
+
+  <div class="card">
+    <label>🔑 Chave da API do Replicate</label>
+    <div class="key-wrap">
+      <input type="password" id="apikey" placeholder="r8_xxxxxxxxxxxxxxxxxxxx">
+      <button class="eye" onclick="toggleKey()">👁</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>📝 Descrição do vídeo (em inglês)</label>
+    <textarea id="prompt" placeholder="A galaxy slowly rotating in deep space, cinematic dark lighting, smooth motion"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Modelo</label>
+        <select id="model">
+          <option value="minimax/video-01">Hailuo</option>
+          <option value="fofr/kling-v1.6-standard">Kling v1.6</option>
+          <option value="lucataco/cogvideox-5b">CogVideoX</option>
+        </select>
+      </div>
+      <div>
+        <label>Formato</label>
+        <select id="aspect">
+          <option value="16:9">16:9</option>
+          <option value="9:16">9:16</option>
+          <option value="1:1">1:1</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="btn" onclick="gerarVideo()">▶ Gerar vídeo</button>
+
+  <div class="error" id="error-box"></div>
+
+  <div class="status" id="status-box">
+    <div class="status-row">
+      <div class="spinner"></div>
+      <span class="status-msg" id="status-msg">Enviando...</span>
+    </div>
+    <div class="status-sub" id="status-sub">Mantenha a tela aberta.</div>
+    <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+  </div>
+
+  <div class="video-wrap" id="video-wrap">
+    <video id="player" controls playsinline></video>
+    <a class="btn-dl" id="btn-dl" target="_blank">⬇️ Abrir vídeo para salvar</a>
+  </div>
+
+  <p class="note">
+    <a href="https://replicate.com/signin" target="_blank">Criar conta grátis</a> ·
+    <a href="https://replicate.com/account/api-tokens" target="_blank">Pegar chave API</a>
+  </p>
+</div>
+
+<script>
+  let count = parseInt(localStorage.getItem('vc') || '0');
+  document.getElementById('counter').textContent = count;
+
+  function toggleKey() {
+    const i = document.getElementById('apikey');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  }
+
+  function setStatus(msg, sub, prog) {
+    document.getElementById('status-msg').textContent = msg;
+    document.getElementById('status-sub').textContent = sub;
+    if (prog !== undefined) document.getElementById('bar-fill').style.width = prog + '%';
+  }
+
+  function showError(msg) {
+    const b = document.getElementById('error-box');
+    b.textContent = '❌ ' + msg;
+    b.style.display = 'block';
+  }
+
+  async function gerarVideo() {
+    const key = document.getElementById('apikey').value.trim();
+    const prompt = document.getElementById('prompt').value.trim();
+    const model = document.getElementById('model').value;
+    const aspect = document.getElementById('aspect').value;
+
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('video-wrap').style.display = 'none';
+
+    if (!key) { showError('Cole sua chave da API antes de gerar.'); return; }
+    if (!prompt) { showError('Descreva o vídeo que você quer criar.'); return; }
+
+    const btn = document.getElementById('btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Gerando...';
+
+    const sb = document.getElementById('status-box');
+    sb.style.display = 'block';
+    setStatus('Enviando para o Replicate...', 'Iniciando...', 10);
+
+    try {
+      const res = await fetch('/gerar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: key, prompt, model, aspect })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erro ao criar predição.');
+
+      setStatus('Na fila...', 'Aguardando processamento...', 25);
+
+      let pred = data;
+      let attempts = 0;
+
+      while (pred.status !== 'succeeded' && pred.status !== 'failed' && attempts < 80) {
+        await new Promise(r => setTimeout(r, 3000));
+        attempts++;
+        const prog = Math.min(25 + attempts, 90);
+        setStatus('Gerando vídeo...', 'Não feche a tela. Pode levar até 2 minutos.', prog);
+
+        const poll = await fetch(`/status/${pred.id}?apiKey=${key}`);
+        pred = await poll.json();
+      }
+
+      if (pred.status === 'failed') throw new Error(pred.error || 'Geração falhou. Tente outro prompt.');
+      if (pred.status !== 'succeeded') throw new Error('Tempo esgotado. Tente novamente.');
+
+      setStatus('✅ Pronto!', '', 100);
+
+      const url = Array.isArray(pred.output) ? pred.output[0] : pred.output;
+      document.getElementById('player').src = url;
+      document.getElementById('btn-dl').href = url;
+      document.getElementById('video-wrap').style.display = 'block';
+
+      count++;
+      localStorage.setItem('vc', count);
+      document.getElementById('counter').textContent = count;
+
+      setTimeout(() => { sb.style.display = 'none'; }, 2000);
+
+    } catch (e) {
+      sb.style.display = 'none';
+      showError(e.message || 'Erro inesperado.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '▶ Gerar vídeo';
+    }
+  }
+</script>
+</body>
+</html>
